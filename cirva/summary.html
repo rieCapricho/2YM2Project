@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Summary</title>
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/css/style.css" rel="stylesheet">
+    <link href="assets/css/custom.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+
+<!-- Sidebar Navigation -->
+<div class="lime-sidebar">
+    <div class="lime-sidebar-inner slimscroll">
+        <ul class="accordion-menu">
+            <li class="sidebar-title">NAVIGATIONS</li>
+            <li><a href="dashboard"><i class="material-icons">dashboard</i> Dashboard</a></li>
+            <li><a href="events"><i class="material-icons">event</i> Events</a></li>
+            <li><a href="revenues"><i class="material-icons">trending_up</i> Revenues</a></li>
+            <li><a href="payments"><i class="material-icons">payment</i> Payments</a></li>
+            <li><a href="expenses"><i class="material-icons">request_quote</i> Expenses</a></li>
+            <li><a href="attendance"><i class="material-icons">schedule</i> Attendance</a></li>
+            <li><a href="users"><i class="material-icons">people</i> Users</a></li>
+            <li><a href="summary" class="active"><i class="material-icons">bar_chart</i> Summary</a></li>
+        </ul>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="lime-container">
+    <div class="lime-body">
+        <div class="container mt-4">
+            <div class="d-flex align-items-center mb-3">
+                <a href="dashboard" class="btn btn-outline-dark mr-3">
+                    <i class="material-icons">arrow_back</i>
+                </a>
+                <h4 class="mb-0">Summary</h4>
+            </div>
+
+            <!-- Date Picker -->
+            <div class="row">
+                <div class="col-md-4 offset-md-4">
+                    <input type="month" id="monthPicker" class="form-control mt-3">
+                </div>
+            </div>
+
+            <!-- Revenue Table -->
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h5 class="card-title text-center">Revenues</h5>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Event Date</th>
+                                    <th>Event Name</th>
+                                    <th>Description</th>
+                                    <th>Amount Given</th>
+                                </tr>
+                            </thead>
+                            <tbody id="revenuesTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Expenses Table -->
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h5 class="card-title text-center">Expenses</h5>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Date Used</th>
+                                    <th>Description</th>
+                                    <th>Amount</th>
+                                    <th>Event Name</th>
+                                </tr>
+                            </thead>
+                            <tbody id="expensesTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function () {
+    $("#monthPicker").on("change", function () {
+        const selectedMonth = $(this).val();
+        if (!selectedMonth) return;
+
+        // Fetch Revenues
+        $.get(`/summary/revenues/${selectedMonth}`, function (response) {
+            let rows = "";
+            response.forEach(revenue => {
+                rows += `<tr>
+                            <td>${revenue.EventDate}</td>
+                            <td>${revenue.EventName || 'N/A'}</td>
+                            <td>${revenue.Description || 'N/A'}</td>
+                            <td>${revenue.AmountGiven || 0}</td>
+                         </tr>`;
+            });
+            $("#revenuesTableBody").html(rows);
+        });
+
+        // Fetch Expenses
+        $.get(`/summary/expenses/${selectedMonth}`, function (response) {
+            let rows = "";
+            response.forEach(expense => {
+                rows += `<tr>
+                            <td>${expense.DateUsed}</td>
+                            <td>${expense.Description}</td>
+                            <td>${expense.Amount}</td>
+                            <td>${expense.EventName || 'N/A'}</td>
+                         </tr>`;
+            });
+            $("#expensesTableBody").html(rows);
+        });
+    });
+});
+</script>
+
+<!-- Javascripts -->
+<script src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+
+</body>
+</html>
